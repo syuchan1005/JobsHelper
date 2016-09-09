@@ -1,3 +1,6 @@
+[Jobs Reborn](https://www.spigotmc.org/resources/jobs-reborn.4216/) config helper
+
+## General
 This software is released under the MIT License, see LICENSE.md.
 
 Need Library:

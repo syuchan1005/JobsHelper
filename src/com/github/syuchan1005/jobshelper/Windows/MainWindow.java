@@ -214,7 +214,7 @@ public class MainWindow extends JFrame {
 	}
 
 	private void createUIComponents() {
-		JobTabList = new JButtonTabbedPane(new ImageIcon(this.getClass().getResource("./../Component/close.png")),
+		JobTabList = new JButtonTabbedPane(new ImageIcon(this.getClass().getClassLoader().getResource("resources/close.png")),
 				() -> {
 					JobsWindow jobsWindow = new JobsWindow();
 					JobTabList.addTab("Untitled", jobsWindow.getMainPane());

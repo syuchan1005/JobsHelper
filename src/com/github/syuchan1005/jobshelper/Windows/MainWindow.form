@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.github.syuchan1005.jobshelper.Windows.MainWindow">
-  <grid id="27dc6" binding="MainPane" layout-manager="GridLayoutManager" row-count="3" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="27dc6" binding="MainPane" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
       <xy x="20" y="20" width="500" height="400"/>
@@ -8,9 +8,9 @@
     <properties/>
     <border type="none"/>
     <children>
-      <tabbedpane id="c9f06" binding="JobTabList">
+      <tabbedpane id="c9f06" binding="JobTabList" custom-create="true">
         <constraints>
-          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
             <preferred-size width="200" height="200"/>
           </grid>
         </constraints>
@@ -18,51 +18,10 @@
         <border type="none"/>
         <children/>
       </tabbedpane>
-      <toolbar id="bfcb5" binding="ToolBar">
-        <constraints>
-          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="-1" height="20"/>
-          </grid>
-        </constraints>
-        <properties>
-          <floatable value="false"/>
-        </properties>
-        <border type="none"/>
-        <children>
-          <component id="f91c1" class="javax.swing.JButton" binding="loadButton" default-binding="true">
-            <constraints/>
-            <properties>
-              <text value="Load"/>
-            </properties>
-          </component>
-          <component id="69c5a" class="javax.swing.JButton" binding="saveButton" default-binding="true">
-            <constraints/>
-            <properties>
-              <text value="Save"/>
-            </properties>
-          </component>
-          <component id="15cd7" class="javax.swing.JToolBar$Separator">
-            <constraints/>
-            <properties/>
-          </component>
-          <component id="ef539" class="javax.swing.JButton" binding="AddTabButton">
-            <constraints/>
-            <properties>
-              <text value="AddTab"/>
-            </properties>
-          </component>
-          <component id="2327e" class="javax.swing.JButton" binding="RemoveTabButton">
-            <constraints/>
-            <properties>
-              <text value="RemoveTab"/>
-            </properties>
-          </component>
-        </children>
-      </toolbar>
       <grid id="60c69" binding="ResultPane" layout-manager="GridLayoutManager" row-count="2" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
-          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
         <border type="none"/>

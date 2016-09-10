@@ -1,35 +1,19 @@
 package com.github.syuchan1005.jobshelper.Windows;
 
 import com.github.syuchan1005.jobshelper.Color;
+import com.github.syuchan1005.jobshelper.Component.JButtonTabbedPane;
 import com.github.syuchan1005.jobshelper.Material;
 import org.yaml.snakeyaml.Yaml;
 
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
-import javax.swing.JToolBar;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.WindowConstants;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Toolkit;
+import javax.swing.*;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
+import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -47,13 +31,11 @@ public class MainWindow extends JFrame {
 	private JTextArea ResultArea;
 	private JButton CreateButton;
 	private JButton CopyButton;
-	private JButton loadButton;
-	private JButton saveButton;
-	private JButton AddTabButton;
-	private JButton RemoveTabButton;
-	private JPopupMenu jPopupMenu;
-	private JToolBar ToolBar;
 	private JPanel ResultPane;
+	private JMenuBar menuBar;
+	private JMenu configMenu;
+	private JMenuItem loadItem;
+	private JMenuItem saveItem;
 	private static List<JobsWindow> jobsWindowList = new ArrayList<>();
 	private static JFileChooser jFileChooser;
 	private static Yaml yaml = new Yaml();
@@ -62,11 +44,11 @@ public class MainWindow extends JFrame {
 	public MainWindow() {
 		this.setFrameData();
 		this.ResultArea.setTabSize(2);
+		this.setMenu();
 		this.setButtonListener();
-		this.setToolBar();
-		addJobTab(null);
+		// this.addJobTab(null);
 		this.setLookAndFeel(this);
-		setEvent();
+		this.setEvent();
 		this.setVisible(true);
 	}
 
@@ -77,12 +59,22 @@ public class MainWindow extends JFrame {
 		this.setSize(700, 750);
 	}
 
+	private void setMenu() {
+		menuBar = new JMenuBar();
+		configMenu = new JMenu("Config");
+		loadItem = new JMenuItem("LoadConfig");
+		saveItem = new JMenuItem("SaveConfig");
+		configMenu.add(loadItem);
+		configMenu.add(saveItem);
+		menuBar.add(configMenu);
+		this.setJMenuBar(menuBar);
+	}
+
 	private boolean heightFlag = false;
 
 	private void setEvent() {
 		JobTabList.addMouseMotionListener(
 				new MouseAdapter() {
-
 					@Override
 					public void mouseMoved(MouseEvent e) {
 						int y = e.getY();
@@ -100,7 +92,7 @@ public class MainWindow extends JFrame {
 						if (heightFlag) {
 							int y = e.getY();
 							JobTabList.setPreferredSize(new Dimension(JobTabList.getWidth(), y));
-							ResultPane.setPreferredSize(new Dimension(ResultPane.getWidth(), getHeight() - ToolBar.getHeight() - y));
+							ResultPane.setPreferredSize(new Dimension(ResultPane.getWidth(), getHeight() - menuBar.getHeight() - y));
 							JobTabList.revalidate();
 							ResultPane.revalidate();
 							repaint();
@@ -116,26 +108,15 @@ public class MainWindow extends JFrame {
 			this.ResultArea.setText(toYaml());
 		});
 		CopyButton.addActionListener(event -> {
-			copyToClipboad(this.ResultArea.getText());
+			copyToClipboard(this.ResultArea.getText());
 		});
-		AddTabButton.addActionListener(event -> {
-			addJobTab(null);
-		});
-		RemoveTabButton.addActionListener(event -> {
-			JobTabList.remove(JobTabList.getSelectedIndex());
-			if (jobsWindowList.size() == 1) {
-				jobsWindowList.clear();
-			} else {
-				jobsWindowList.remove(JobTabList.getSelectedIndex());
-			}
-		});
-		loadButton.addActionListener(event -> {
+		loadItem.addActionListener(event -> {
 			if (jFileChooser == null) jFileChooser = new JFileChooser();
-			if (jFileChooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return;
+			if (jFileChooser.showOpenDialog(((Component) event.getSource())) != JFileChooser.APPROVE_OPTION) return;
 			LinkedHashMap<String, Map<String, Object>> jobs = ((LinkedHashMap<String, LinkedHashMap<String, Map<String, Object>>>) yaml.load(getText(jFileChooser.getSelectedFile()).replaceAll("\\t", "    "))).get("Jobs");
 			for (Map.Entry<String, Map<String, Object>> jobEntry : jobs.entrySet()) {
 				JobsWindow jobsWindow = new JobsWindow();
-				/* basicWindow */
+				// basicWindow
 				{
 					BasicWindow basic = jobsWindow.getBasicWindow();
 					basic.getTitleNameField().setText(jobEntry.getKey());
@@ -153,7 +134,7 @@ public class MainWindow extends JFrame {
 					basic.getIPEField().setText((String) jobEntry.getValue().get("income-progression-equation"));
 					basic.getEPEField().setText((String) jobEntry.getValue().get("experience-progression-equation"));
 				}
-				/* ContentWindow */
+				// ContentWindow
 				{
 					List<ContentWindow> contentWindowList = jobsWindow.getContentWindowList();
 					for (Map.Entry<String, Object> contentEntry : jobEntry.getValue().entrySet()) {
@@ -177,26 +158,19 @@ public class MainWindow extends JFrame {
 				addJobTab(jobsWindow);
 			}
 		});
-		saveButton.addActionListener(event -> {
+		saveItem.addActionListener(event -> {
 			if (jFileChooser == null) jFileChooser = new JFileChooser();
-			if (jFileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) return;
+			if (jFileChooser.showSaveDialog(((Component) event.getSource())) != JFileChooser.APPROVE_OPTION) return;
 			File file = jFileChooser.getSelectedFile();
 			try {
 				file.createNewFile();
 				PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
 				pw.println(toYaml().replaceAll("\\t", "    "));
 				pw.close();
-			} catch (IOException e) {
-				JOptionPane.showMessageDialog(this, e.getMessage());
+			} catch (IOException ex) {
+				JOptionPane.showMessageDialog(((Component) event.getSource()), ex.getMessage());
 			}
 		});
-	}
-
-	private void setToolBar() {
-		JPopupMenu pop = new JPopupMenu();
-		JMenuItem item = new JMenuItem("Test");
-		pop.add(item);
-		this.ToolBar.add(pop);
 	}
 
 	public void addJobTab(JobsWindow jobsWindow) {
@@ -216,7 +190,7 @@ public class MainWindow extends JFrame {
 		}
 	}
 
-	public static void copyToClipboad(String select) {
+	public static void copyToClipboard(String select) {
 		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 		StringSelection selection = new StringSelection(select);
 		clipboard.setContents(selection, selection);
@@ -239,4 +213,20 @@ public class MainWindow extends JFrame {
 		return yaml;
 	}
 
+	private void createUIComponents() {
+		JobTabList = new JButtonTabbedPane(new ImageIcon(this.getClass().getResource("./../Component/close.png")),
+				() -> {
+					JobsWindow jobsWindow = new JobsWindow();
+					JobTabList.addTab("Untitled", jobsWindow.getMainPane());
+					jobsWindowList.add(jobsWindow);
+				},
+				(component) -> {
+					JobTabList.removeTabAt(JobTabList.indexOfComponent(component));
+					if (jobsWindowList.size() == 1) {
+						jobsWindowList.clear();
+					} else {
+						jobsWindowList.remove(JobTabList.getSelectedIndex());
+					}
+				});
+	}
 }
